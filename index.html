@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Player — Music Streaming</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon material-icons-round">graphic_eq</span>
+      <span class="logo-text">Vibe</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Menu</div>
+      <a href="#" class="nav-item active" data-page="home">
+        <span class="material-icons-round">home</span>
+        <span>Home</span>
+      </a>
+      <a href="#" class="nav-item" data-page="explore">
+        <span class="material-icons-round">explore</span>
+        <span>Explore</span>
+      </a>
+      <a href="#" class="nav-item" data-page="library">
+        <span class="material-icons-round">library_music</span>
+        <span>Library</span>
+      </a>
+      <a href="#" class="nav-item" data-page="favorites">
+        <span class="material-icons-round">favorite</span>
+        <span>Favorites</span>
+        <span class="nav-badge" id="favCount">0</span>
+      </a>
+
+      <div class="nav-section-label">Playlists</div>
+      <a href="#" class="nav-item" data-page="playlist-chill">
+        <span class="material-icons-round">spa</span>
+        <span>Chill Vibes</span>
+      </a>
+      <a href="#" class="nav-item" data-page="playlist-energy">
+        <span class="material-icons-round">bolt</span>
+        <span>High Energy</span>
+      </a>
+      <a href="#" class="nav-item" data-page="playlist-focus">
+        <span class="material-icons-round">psychology</span>
+        <span>Deep Focus</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item" data-page="settings">
+        <span class="material-icons-round">settings</span>
+        <span>Settings</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle">
+        <span class="material-icons-round">menu</span>
+      </button>
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" placeholder="Search songs, artists..." id="searchInput">
+        <button class="search-clear" id="searchClear" style="display:none;">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
+        <div class="user-avatar" id="profileBtn" title="Profile">
+          <span class="material-icons-round">person</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Profile Dropdown -->
+    <div class="profile-dropdown" id="profileDropdown">
+      <div class="profile-header">
+        <div class="profile-avatar-lg">
+          <span class="material-icons-round">person</span>
+        </div>
+        <div class="profile-info">
+          <h3>Music Lover</h3>
+          <p>Free Account</p>
+        </div>
+      </div>
+      <div class="profile-menu">
+        <button class="profile-menu-item" id="profileEditBtn">
+          <span class="material-icons-round">edit</span>
+          <span>Edit Profile</span>
+        </button>
+        <button class="profile-menu-item" data-page="settings">
+          <span class="material-icons-round">settings</span>
+          <span>Settings</span>
+        </button>
+        <button class="profile-menu-item">
+          <span class="material-icons-round">help_outline</span>
+          <span>Help & Support</span>
+        </button>
+        <hr class="profile-divider">
+        <button class="profile-menu-item" id="profileUpgradeBtn">
+          <span class="material-icons-round">star</span>
+          <span>Upgrade to Premium</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Page Content Area -->
+    <div class="page-content" id="pageContent">
+
+      <!-- HOME PAGE -->
+      <section class="page active" id="page-home">
+        <div class="hero-banner">
+          <div class="hero-text">
+            <h1 id="greetingText">Good Evening 🎵</h1>
+            <p>Discover new music and enjoy your favorites</p>
+          </div>
+          <div class="hero-visualizer" id="heroVisualizer"></div>
+        </div>
+
+        <div class="content-section">
+          <div class="section-header">
+            <h2>Recently Played</h2>
+            <button class="see-all-btn" data-target="library">See All</button>
+          </div>
+          <div class="track-grid" id="recentGrid"></div>
+        </div>
+
+        <div class="content-section">
+          <div class="section-header">
+            <h2>Trending Now</h2>
+            <button class="see-all-btn" data-target="explore">See All</button>
+          </div>
+          <div class="track-grid" id="trendingGrid"></div>
+        </div>
+      </section>
+
+      <!-- EXPLORE PAGE -->
+      <section class="page" id="page-explore">
+        <h1 class="page-title">Explore</h1>
+        <p class="page-subtitle">Browse by mood and genre</p>
+        <div class="genre-grid" id="genreGrid"></div>
+
+        <div class="content-section">
+          <div class="section-header">
+            <h2 id="exploreListTitle">All Tracks</h2>
+            <button class="see-all-btn" id="clearGenreFilter" style="display:none;">Clear Filter</button>
+          </div>
+          <div class="track-list" id="allTracksList"></div>
+        </div>
+      </section>
+
+      <!-- LIBRARY PAGE -->
+      <section class="page" id="page-library">
+        <h1 class="page-title">Your Library</h1>
+        <p class="page-subtitle">All your music in one place</p>
+        <div class="library-stats" id="libraryStats"></div>
+        <div class="track-list" id="libraryList"></div>
+      </section>
+
+      <!-- FAVORITES PAGE -->
+      <section class="page" id="page-favorites">
+        <h1 class="page-title">Favorites</h1>
+        <p class="page-subtitle">Songs you've liked</p>
+        <div class="track-list" id="favoritesList"></div>
+        <div class="empty-state" id="emptyFavorites">
+          <span class="material-icons-round">favorite_border</span>
+          <h3>No favorites yet</h3>
+          <p>Like songs to add them here</p>
+        </div>
+      </section>
+
+      <!-- PLAYLIST PAGES -->
+      <section class="page" id="page-playlist-chill">
+        <div class="playlist-header chill-gradient">
+          <span class="material-icons-round playlist-icon">spa</span>
+          <div>
+            <h1 class="page-title">Chill Vibes</h1>
+            <p class="page-subtitle">Relax and unwind</p>
+          </div>
+        </div>
+        <div class="track-list" id="chillList"></div>
+      </section>
+
+      <section class="page" id="page-playlist-energy">
+        <div class="playlist-header energy-gradient">
+          <span class="material-icons-round playlist-icon">bolt</span>
+          <div>
+            <h1 class="page-title">High Energy</h1>
+            <p class="page-subtitle">Power up your day</p>
+          </div>
+        </div>
+        <div class="track-list" id="energyList"></div>
+      </section>
+
+      <section class="page" id="page-playlist-focus">
+        <div class="playlist-header focus-gradient">
+          <span class="material-icons-round playlist-icon">psychology</span>
+          <div>
+            <h1 class="page-title">Deep Focus</h1>
+            <p class="page-subtitle">Concentrate and create</p>
+          </div>
+        </div>
+        <div class="track-list" id="focusList"></div>
+      </section>
+
+      <!-- SETTINGS PAGE -->
+      <section class="page" id="page-settings">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Customize your experience</p>
+        <div class="settings-panel">
+          <div class="setting-item">
+            <div>
+              <h3>Dark Mode</h3>
+              <p>Switch between light and dark themes</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeSwitch" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div>
+              <h3>Crossfade</h3>
+              <p>Smooth transition between tracks</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="crossfadeSwitch">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div>
+              <h3>Audio Quality</h3>
+              <p>Select streaming quality</p>
+            </div>
+            <select class="setting-select" id="qualitySelect">
+              <option value="low">Low (128kbps)</option>
+              <option value="medium" selected>Medium (256kbps)</option>
+              <option value="high">High (320kbps)</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div>
+              <h3>Equalizer</h3>
+              <p>Adjust audio frequencies</p>
+            </div>
+            <div class="eq-bars">
+              <div class="eq-col"><input type="range" class="eq-slider" min="0" max="100" value="60"><span>60Hz</span></div>
+              <div class="eq-col"><input type="range" class="eq-slider" min="0" max="100" value="75"><span>230Hz</span></div>
+              <div class="eq-col"><input type="range" class="eq-slider" min="0" max="100" value="50"><span>910Hz</span></div>
+              <div class="eq-col"><input type="range" class="eq-slider" min="0" max="100" value="80"><span>4kHz</span></div>
+              <div class="eq-col"><input type="range" class="eq-slider" min="0" max="100" value="65"><span>14kHz</span></div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div>
+              <h3>About</h3>
+              <p>Vibe Player v1.0.0 — Built with ❤️</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEARCH RESULTS PAGE -->
+      <section class="page" id="page-search">
+        <h1 class="page-title">Search Results</h1>
+        <p class="page-subtitle" id="searchResultsSubtitle"></p>
+        <div class="track-list" id="searchResultsList"></div>
+        <div class="empty-state" id="emptySearch">
+          <span class="material-icons-round">search_off</span>
+          <h3>No results found</h3>
+          <p>Try a different search term</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Now Playing Bar (Bottom) -->
+  <div class="now-playing-bar" id="nowPlayingBar">
+    <div class="npb-track-info">
+      <div class="npb-art">
+        <div class="npb-disc" id="npbDisc">
+          <div class="npb-disc-inner"></div>
+        </div>
+      </div>
+      <div class="npb-details">
+        <span class="npb-title" id="npbTitle">Select a track</span>
+        <span class="npb-artist" id="npbArtist">—</span>
+      </div>
+      <button class="icon-btn npb-fav" id="npbFavBtn" title="Like">
+        <span class="material-icons-round" id="npbFavIcon">favorite_border</span>
+      </button>
+    </div>
+
+    <div class="npb-controls">
+      <div class="npb-buttons">
+        <button class="icon-btn" id="shuffleBtn" title="Shuffle">
+          <span class="material-icons-round">shuffle</span>
+        </button>
+        <button class="icon-btn" id="prevBtn" title="Previous">
+          <span class="material-icons-round">skip_previous</span>
+        </button>
+        <button class="play-btn" id="playBtn" title="Play">
+          <span class="material-icons-round" id="playIcon">play_arrow</span>
+        </button>
+        <button class="icon-btn" id="nextBtn" title="Next">
+          <span class="material-icons-round">skip_next</span>
+        </button>
+        <button class="icon-btn" id="repeatBtn" title="Repeat">
+          <span class="material-icons-round">repeat</span>
+        </button>
+      </div>
+      <div class="npb-progress">
+        <span class="time-label" id="currentTime">0:00</span>
+        <div class="progress-track" id="progressTrack">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-thumb" id="progressThumb"></div>
+        </div>
+        <span class="time-label" id="duration">0:00</span>
+      </div>
+    </div>
+
+    <div class="npb-extra">
+      <button class="icon-btn" id="queueBtn" title="Queue">
+        <span class="material-icons-round">queue_music</span>
+      </button>
+      <div class="volume-control">
+        <button class="icon-btn" id="muteBtn" title="Volume">
+          <span class="material-icons-round" id="volumeIcon">volume_up</span>
+        </button>
+        <div class="volume-track" id="volumeTrack">
+          <div class="volume-fill" id="volumeFill"></div>
+          <div class="volume-thumb" id="volumeThumb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Queue Panel (Slide-in) -->
+  <div class="queue-panel" id="queuePanel">
+    <div class="queue-header">
+      <h3>Up Next</h3>
+      <button class="icon-btn" id="closeQueue">
+        <span class="material-icons-round">close</span>
+      </button>
+    </div>
+    <div class="queue-list" id="queueList"></div>
+  </div>
+  <div class="queue-overlay" id="queueOverlay"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
