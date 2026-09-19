@@ -1136,3 +1136,72 @@ input, select { font-family: inherit; }
   .setting-item { flex-direction: column; align-items: flex-start; }
   .eq-bars { margin-top: 8px; }
 }
+
+/* ========== KEYBOARD SHORTCUTS MODAL ========== */
+.shortcuts-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.shortcuts-modal.open {
+  display: flex;
+}
+.shortcuts-modal-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.25s ease;
+}
+@keyframes modalSlideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.shortcuts-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.shortcuts-modal-header h2 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bg-hover);
+}
+.shortcut-item:last-child {
+  border-bottom: none;
+}
+.shortcut-item kbd {
+  background: var(--bg-elevated);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+  border: 1px solid var(--bg-hover);
+}
+.shortcut-item span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}

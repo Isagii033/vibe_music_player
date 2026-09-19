@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMobileMenu();
   setupProfile();
   setupSeeAllButtons();
+  setupShortcutsButton();
 });
 
 // ========== GREETING ==========
@@ -717,20 +718,82 @@ function setupSearch() {
 
   // Keyboard shortcut: Ctrl+K to focus search
   document.addEventListener('keydown', (e) => {
+    const isTyping = document.activeElement === searchInput || document.activeElement.tagName === 'INPUT';
+
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
       searchInput.focus();
+      return;
     }
-    // Escape to clear search
-    if (e.key === 'Escape' && document.activeElement === searchInput) {
-      searchInput.value = '';
-      searchInput.blur();
-      searchInput.dispatchEvent(new Event('input'));
+
+    // Escape to clear search or close shortcuts help
+    if (e.key === 'Escape') {
+      if (document.activeElement === searchInput) {
+        searchInput.value = '';
+        searchInput.blur();
+        searchInput.dispatchEvent(new Event('input'));
+      }
+      const helpModal = $('#shortcutsHelp');
+      if (helpModal && helpModal.classList.contains('open')) {
+        helpModal.classList.remove('open');
+      }
+      return;
     }
-    // Space to play/pause (when not typing)
-    if (e.key === ' ' && document.activeElement !== searchInput && document.activeElement.tagName !== 'INPUT') {
+
+    // All shortcuts below only work when NOT typing in an input
+    if (isTyping) return;
+
+    // Space — play/pause
+    if (e.key === ' ') {
       e.preventDefault();
       playBtn.click();
+    }
+
+    // ArrowRight — next track
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      nextBtn.click();
+    }
+
+    // ArrowLeft — previous track
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prevBtn.click();
+    }
+
+    // ArrowUp — volume up
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      audio.volume = Math.min(1, audio.volume + 0.1);
+      audio.muted = false;
+      updateVolumeUI();
+    }
+
+    // ArrowDown — volume down
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      audio.volume = Math.max(0, audio.volume - 0.1);
+      updateVolumeUI();
+    }
+
+    // M — mute/unmute
+    if (e.key === 'm' || e.key === 'M') {
+      muteBtn.click();
+    }
+
+    // S — toggle shuffle
+    if (e.key === 's' || e.key === 'S') {
+      shuffleBtn.click();
+    }
+
+    // R — toggle repeat
+    if (e.key === 'r' || e.key === 'R') {
+      repeatBtn.click();
+    }
+
+    // ? — show keyboard shortcuts help
+    if (e.key === '?') {
+      toggleShortcutsHelp();
     }
   });
 }
@@ -858,5 +921,55 @@ function setupProfile() {
       const navItem = $(`.nav-item[data-page="settings"]`);
       if (navItem) navItem.classList.add('active');
     });
+  }
+}
+
+// ========== KEYBOARD SHORTCUTS HELP ==========
+function toggleShortcutsHelp() {
+  let modal = $('#shortcutsHelp');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'shortcutsHelp';
+    modal.className = 'shortcuts-modal';
+    modal.innerHTML = `
+      <div class="shortcuts-modal-content">
+        <div class="shortcuts-modal-header">
+          <h2>Keyboard Shortcuts</h2>
+          <button class="icon-btn shortcuts-close">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+        <div class="shortcuts-list">
+          <div class="shortcut-item"><kbd>Space</kbd><span>Play / Pause</span></div>
+          <div class="shortcut-item"><kbd>←</kbd><span>Previous Track</span></div>
+          <div class="shortcut-item"><kbd>→</kbd><span>Next Track</span></div>
+          <div class="shortcut-item"><kbd>↑</kbd><span>Volume Up</span></div>
+          <div class="shortcut-item"><kbd>↓</kbd><span>Volume Down</span></div>
+          <div class="shortcut-item"><kbd>M</kbd><span>Mute / Unmute</span></div>
+          <div class="shortcut-item"><kbd>S</kbd><span>Toggle Shuffle</span></div>
+          <div class="shortcut-item"><kbd>R</kbd><span>Toggle Repeat</span></div>
+          <div class="shortcut-item"><kbd>Ctrl+K</kbd><span>Search</span></div>
+          <div class="shortcut-item"><kbd>Esc</kbd><span>Close / Clear</span></div>
+          <div class="shortcut-item"><kbd>?</kbd><span>Show This Help</span></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.shortcuts-close').addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+  modal.classList.toggle('open');
+}
+
+// ========== SHORTCUTS BUTTON ==========
+function setupShortcutsButton() {
+  const btn = $('#shortcutsBtn');
+  if (btn) {
+    btn.addEventListener('click', toggleShortcutsHelp);
   }
 }
