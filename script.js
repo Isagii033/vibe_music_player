@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupProfile();
   setupSeeAllButtons();
   setupShortcutsButton();
+  setupCreatePlaylist();
 });
 
 // ========== GREETING ==========
@@ -972,4 +973,97 @@ function setupShortcutsButton() {
   if (btn) {
     btn.addEventListener('click', toggleShortcutsHelp);
   }
+}
+
+// ========== CUSTOM PLAYLISTS ==========
+let customPlaylists = [];
+
+function setupCreatePlaylist() {
+  const btn = $('#createPlaylistBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', () => {
+    showPlaylistModal();
+  });
+}
+
+function showPlaylistModal() {
+  let modal = $('#playlistModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'playlistModal';
+    modal.className = 'playlist-modal';
+    modal.innerHTML = `
+      <div class="playlist-modal-content">
+        <h2>Create New Playlist</h2>
+        <input type="text" id="playlistNameInput" placeholder="Enter playlist name..." maxlength="30" autocomplete="off">
+        <div class="playlist-modal-actions">
+          <button class="btn-cancel" id="playlistCancelBtn">Cancel</button>
+          <button class="btn-create" id="playlistCreateBtn">Create</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    $('#playlistCancelBtn').addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+
+    $('#playlistCreateBtn').addEventListener('click', () => {
+      const name = $('#playlistNameInput').value.trim();
+      if (name) {
+        createCustomPlaylist(name);
+        modal.classList.remove('open');
+        $('#playlistNameInput').value = '';
+      }
+    });
+
+    $('#playlistNameInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        $('#playlistCreateBtn').click();
+      }
+      if (e.key === 'Escape') {
+        modal.classList.remove('open');
+      }
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+
+  modal.classList.add('open');
+  setTimeout(() => $('#playlistNameInput').focus(), 100);
+}
+
+function createCustomPlaylist(name) {
+  const id = 'custom-' + Date.now();
+  const playlist = { id, name, tracks: [] };
+  customPlaylists.push(playlist);
+  renderCustomPlaylistNav();
+  showToast(`Playlist "${name}" created!`);
+}
+
+function renderCustomPlaylistNav() {
+  const container = $('#customPlaylistsNav');
+  if (!container) return;
+  container.innerHTML = '';
+
+  customPlaylists.forEach(pl => {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.className = 'nav-item';
+    link.dataset.playlist = pl.id;
+    link.innerHTML = `
+      <span class="material-icons-round">queue_music</span>
+      <span>${pl.name}</span>
+    `;
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showToast(`Playlist "${pl.name}" — add tracks coming soon!`);
+      $$('.nav-item').forEach(n => n.classList.remove('active'));
+      link.classList.add('active');
+    });
+    container.appendChild(link);
+  });
 }
